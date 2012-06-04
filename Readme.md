@@ -1,4 +1,4 @@
-# html5-crumbs
+# webgl-crumbs
 
 ## for beginners
 
