@@ -1,7 +1,13 @@
 <!DOCTYPE html>
 <html>
-  <head>
+<head>
   <title>WebGL crumbs</title>
+</head>
+<body onload="webGLStart();">
+  <h1>WebGL crumbs</h1>
+  <h2>Lesson 02</h2>
+  <canvas id="canvas" width="500" height="500"></canvas>
+
   <script src="js/gl-matrix.js"></script>
 
   <script type="x-shader/x-vertex" id="shader-vs">
@@ -14,8 +20,8 @@
     varying vec4 vColor;
 
     void main(void) {
-        gl_Position = uPMatrix * uMVMatrix * vec4(aVertexPosition, 1.0);
-        vColor = aVertexColor;
+      gl_Position = uPMatrix * uMVMatrix * vec4(aVertexPosition, 1.0);
+      vColor = aVertexColor;
     }
   </script>
   
@@ -32,13 +38,13 @@
   <script type="text/javascript">
     window.requestAnimFrame = (function() {
       return window.requestAnimationFrame ||
-             window.webkitRequestAnimationFrame ||
-             window.mozRequestAnimationFrame ||
-             window.oRequestAnimationFrame ||
-             window.msRequestAnimationFrame ||
-             function(element) {
-               window.setTimeout(callback, 1000/60);
-             };
+        window.webkitRequestAnimationFrame ||
+        window.mozRequestAnimationFrame ||
+        window.oRequestAnimationFrame ||
+        window.msRequestAnimationFrame ||
+        function(element) {
+          window.setTimeout(callback, 1000/60);
+        };
     })();
   </script>
 
@@ -54,49 +60,49 @@
 
     var squareVertexPositionBuffer;
     var vertices = new Float32Array([
-          // Front face
-           0.0,  1.0,  0.0,
-          -1.0, -1.0,  1.0,
-           1.0, -1.0,  1.0,
+      // Front face
+       0.0,  1.0,  0.0,
+      -1.0, -1.0,  1.0,
+       1.0, -1.0,  1.0,
 
-          // Right face
-           0.0,  1.0,  0.0,
-           1.0, -1.0,  1.0,
-           1.0, -1.0, -1.0,
+      // Right face
+       0.0,  1.0,  0.0,
+       1.0, -1.0,  1.0,
+       1.0, -1.0, -1.0,
 
-          // Back face
-           0.0,  1.0,  0.0,
-           1.0, -1.0, -1.0,
-          -1.0, -1.0, -1.0,
+      // Back face
+       0.0,  1.0,  0.0,
+       1.0, -1.0, -1.0,
+      -1.0, -1.0, -1.0,
 
-          // Left face
-           0.0,  1.0,  0.0,
-          -1.0, -1.0, -1.0,
-          -1.0, -1.0,  1.0
-      ]);
+      // Left face
+       0.0,  1.0,  0.0,
+      -1.0, -1.0, -1.0,
+      -1.0, -1.0,  1.0
+    ]);
 
     var triangleVertexColorBuffer;
     var colors = new Float32Array([
-          // Front face
-          1.0, 0.0, 0.0, 1.0,
-          0.0, 1.0, 0.0, 1.0,
-          0.0, 0.0, 1.0, 1.0,
+      // Front face
+      1.0, 0.0, 0.0, 1.0,
+      0.0, 1.0, 0.0, 1.0,
+      0.0, 0.0, 1.0, 1.0,
 
-          // Right face
-          1.0, 0.0, 0.0, 1.0,
-          0.0, 0.0, 1.0, 1.0,
-          0.0, 1.0, 0.0, 1.0,
+      // Right face
+      1.0, 0.0, 0.0, 1.0,
+      0.0, 0.0, 1.0, 1.0,
+      0.0, 1.0, 0.0, 1.0,
 
-          // Back face
-          1.0, 0.0, 0.0, 1.0,
-          0.0, 1.0, 0.0, 1.0,
-          0.0, 0.0, 1.0, 1.0,
+      // Back face
+      1.0, 0.0, 0.0, 1.0,
+      0.0, 1.0, 0.0, 1.0,
+      0.0, 0.0, 1.0, 1.0,
 
-          // Left face
-          1.0, 0.0, 0.0, 1.0,
-          0.0, 0.0, 1.0, 1.0,
-          0.0, 1.0, 0.0, 1.0
-      ]);
+      // Left face
+      1.0, 0.0, 0.0, 1.0,
+      0.0, 0.0, 1.0, 1.0,
+      0.0, 1.0, 0.0, 1.0
+    ]);
 
     var rTri = 0;
     var lastTime = 0;
@@ -187,21 +193,36 @@
     }
 
     function degToRad(degrees) {
-        return degrees * Math.PI / 180;
+      return degrees * Math.PI / 180;
     }
     
     function initBuffers() {
       triangleVertexPositionBuffer = gl.createBuffer();
-      gl.bindBuffer(gl.ARRAY_BUFFER, triangleVertexPositionBuffer);
-      gl.bufferData(gl.ARRAY_BUFFER, vertices, gl.STATIC_DRAW);
       triangleVertexPositionBuffer.itemSize = 3;
       triangleVertexPositionBuffer.numItems = 12;
 
+      gl.bindBuffer(gl.ARRAY_BUFFER, triangleVertexPositionBuffer);
+      gl.bufferData(gl.ARRAY_BUFFER, vertices, gl.STATIC_DRAW);
+
+      gl.bindBuffer(gl.ARRAY_BUFFER, triangleVertexPositionBuffer);
+      gl.vertexAttribPointer(shaderProgram.vertexPositionAttribute, 
+        triangleVertexPositionBuffer.itemSize, gl.FLOAT, false, 0, 0);
+
       triangleVertexColorBuffer = gl.createBuffer();
-      gl.bindBuffer(gl.ARRAY_BUFFER, triangleVertexColorBuffer);
-      gl.bufferData(gl.ARRAY_BUFFER, colors, gl.STATIC_DRAW);
       triangleVertexColorBuffer.itemSize = 4;
       triangleVertexColorBuffer.numItems = 12;
+
+      gl.bindBuffer(gl.ARRAY_BUFFER, triangleVertexColorBuffer);
+      gl.bufferData(gl.ARRAY_BUFFER, colors, gl.STATIC_DRAW);
+
+      gl.bindBuffer(gl.ARRAY_BUFFER, triangleVertexColorBuffer);
+      gl.vertexAttribPointer(shaderProgram.vertexColorAttribute, 
+        triangleVertexColorBuffer.itemSize, gl.FLOAT, false, 0, 0);
+    }
+
+    function initScene() {
+      gl.clearColor(0.0, 0.0, 0.0, 1.0);
+      gl.enable(gl.DEPTH_TEST);      
     }
 
     function drawScene() {
@@ -211,37 +232,28 @@
       mat4.perspective(45, gl.viewportWidth / gl.viewportHeight, 0.1, 100.0, pMatrix);
       mat4.identity(mvMatrix);
       mat4.translate(mvMatrix, [0.0, 0.0, -7.0]);
-      
-      mvPushMatrix();
-        mat4.rotate(mvMatrix, degToRad(rTri), [0, 1, 0]);
-        gl.bindBuffer(gl.ARRAY_BUFFER, triangleVertexPositionBuffer);
-        gl.vertexAttribPointer(shaderProgram.vertexPositionAttribute, 
-          triangleVertexPositionBuffer.itemSize, gl.FLOAT, false, 0, 0);
+      mat4.rotate(mvMatrix, degToRad(rTri), [0, 1, 0]);
+  
+      gl.uniformMatrix4fv(shaderProgram.pMatrixUniform, false, pMatrix);
+      gl.uniformMatrix4fv(shaderProgram.mvMatrixUniform, false, mvMatrix);
 
-        gl.bindBuffer(gl.ARRAY_BUFFER, triangleVertexColorBuffer);
-        gl.vertexAttribPointer(shaderProgram.vertexColorAttribute, 
-          triangleVertexColorBuffer.itemSize, gl.FLOAT, false, 0, 0);
-        
-        gl.uniformMatrix4fv(shaderProgram.pMatrixUniform, false, pMatrix);
-        gl.uniformMatrix4fv(shaderProgram.mvMatrixUniform, false, mvMatrix);
-        gl.drawArrays(gl.TRIANGLES, 0, triangleVertexPositionBuffer.numItems);
-      mvPopMatrix();
+      gl.bindBuffer(gl.ARRAY_BUFFER, triangleVertexPositionBuffer);
+      gl.drawArrays(gl.TRIANGLES, 0, triangleVertexPositionBuffer.numItems);
     }
 
     function animate() {
-        var timeNow = new Date().getTime();
-        if (lastTime != 0) {
-            var elapsed = timeNow - lastTime;
-
-            rTri += (90 * elapsed) / 1000.0;
-        }
-        lastTime = timeNow;
+      var now = new Date().getTime();
+      if (lastTime != 0) {
+        var elapsed = now - lastTime;
+        rTri += (90 * elapsed) / 1000.0;
+      }
+      lastTime = now;
     }
 
     function tick() {
-        requestAnimFrame(tick);
-        drawScene();
-        animate();
+      requestAnimFrame(tick);
+      drawScene();
+      animate();
     }
 
     function webGLStart() {
@@ -249,18 +261,9 @@
       initGL(canvas);
       initShaders();
       initBuffers();
-
-      gl.clearColor(0.0, 0.0, 0.0, 1.0);
-      gl.enable(gl.DEPTH_TEST);
-
+      initScene();
       tick();
     }
   </script>
-</head>
-
-<body onload="webGLStart();">
-  <h1>WebGL crumbs</h1>
-  <h2>Lesson 02</h2>
-  <canvas id="canvas" width="500" height="500"></canvas>
 </body>
 </html>
