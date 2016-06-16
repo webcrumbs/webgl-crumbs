@@ -2,12 +2,12 @@
 
 ## Recipe
 
-0. [lesson 0](blob/master/lesson-0/index.html)
-1. [lesson 1](blob/master/lesson-1/index.html)
-2. [lesson 2](blob/master/lesson-2/index.html)
-3. [lesson 3](blob/master/lesson-3/index.html)
-4. [lesson 4](blob/master/lesson-4/index.html)
-5. [lesson 5](blob/master/lesson-5/index.html)
+0. [lesson 0](lesson-0/index.html)
+1. [lesson 1](lesson-1/index.html)
+2. [lesson 2](lesson-2/index.html)
+3. [lesson 3](lesson-3/index.html)
+4. [lesson 4](lesson-4/index.html)
+5. [lesson 5](lesson-5/index.html)
 
 ## License
 
