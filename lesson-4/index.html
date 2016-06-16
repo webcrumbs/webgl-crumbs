@@ -1,0 +1,210 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>WebGL crumbs</title>
+</head>
+<body>
+
+  <h1>Lesson 4</h1>
+  <canvas id="canvas" width="800" height="600"></canvas>
+
+  <script>
+    // 1: Create the rendering context
+    {
+      // 1.1: Initialize the context
+      {
+        // Get a canvas
+        var canvas = document.getElementById('canvas');
+        // Create a 3D rendering context
+        var gl = canvas.getContext('webgl');
+        // Check errors
+        if (!gl) {
+          throw new Error('WebGL not supported!')
+        }
+      }
+
+      // 1.2: Initialize the data
+      {
+        // vertex shader source code
+        var vertex_shader_source = `
+          attribute vec2 vertex;
+          attribute vec3 color;
+
+          varying vec3 _color;
+
+          uniform vec2 translation;
+
+          void main(void) {
+            gl_Position = vec4(translation + vertex, 0.0, 1.0);
+            _color = color;
+          }
+        `;
+
+        // fragment shader source code
+        var fragment_shader_source =  `
+          precision mediump float;
+
+          varying vec3 _color;
+
+          void main(void) {
+            gl_FragColor = vec4(_color, 1.0);
+          }
+        `;
+
+        // clear color
+        var clear_color = [0.5, 0.5, 0.5, 1];
+
+        // vertices 2D
+        var vertices = new Float32Array([-0.5, 0.5, 0.0, 0.5, -0.25, 0.25]);
+
+        // indices
+        var indices = new Uint16Array([0, 1, 2]);
+
+        // the colors RGB
+        var colors = new Float32Array([1, 0, 0, 0, 1, 0, 0, 0, 1]);
+
+        // translation
+        var translation = [0.5, 0.5];
+      }
+    }
+
+    // 2: Create the shaders and the shader program
+    {
+
+      // 2.1: Create the vertex shader
+      {
+        // Create a vertex shader object
+        var vertex_shader = gl.createShader(gl.VERTEX_SHADER);
+        // Attach vertex shader source code
+        gl.shaderSource(vertex_shader, vertex_shader_source);
+        // Compile the vertex shader
+        gl.compileShader(vertex_shader);
+        // Check errors
+        {
+          let compiled = gl.getShaderParameter(vertex_shader, gl.COMPILE_STATUS);
+          if (!compiled) {
+            let log = gl.getShaderInfoLog(vertex_shader)
+            throw new Error(log)
+          }
+        }
+      }
+
+      // 2.2: Create the fragment shader
+      {
+        // Create fragment shader object
+        var fragment_shader = gl.createShader(gl.FRAGMENT_SHADER);
+        // Attach fragment shader source code
+        gl.shaderSource(fragment_shader, fragment_shader_source);
+        // Compile the fragmentt shader
+        gl.compileShader(fragment_shader);
+        // Check errors
+        {
+          let compiled = gl.getShaderParameter(fragment_shader, gl.COMPILE_STATUS);
+          if (!compiled) {
+            let log = gl.getShaderInfoLog(fragment_shader)
+            throw new Error(log)
+          }
+        }
+      }
+
+      // 2.3: Create the shader program
+      {
+        // Create a shader program object
+        var shader_program = gl.createProgram();
+        // Attach the vertex shader
+        gl.attachShader(shader_program, vertex_shader);
+        // Attach the fragment shader
+        gl.attachShader(shader_program, fragment_shader);
+        // Link both programs
+        gl.linkProgram(shader_program);
+        // Use the combined shader program object
+        gl.useProgram(shader_program);
+      }
+    }
+
+    // 3: Create the buffer objects
+    {
+      // 3.1: Create the vertex buffer
+      {
+        // Create an empty buffer object to store the vertex buffer
+        var vertex_buffer = gl.createBuffer();
+        //Bind appropriate array buffer to it
+        gl.bindBuffer(gl.ARRAY_BUFFER, vertex_buffer);
+        // Pass the vertex data to the buffer
+        gl.bufferData(gl.ARRAY_BUFFER, vertices, gl.STATIC_DRAW);
+        // Unbind the buffer
+        gl.bindBuffer(gl.ARRAY_BUFFER, null);
+      }
+
+      // 3.2: Create the index buffer
+      {
+        // Create an empty buffer object to store Index buffer
+        var index_buffer = gl.createBuffer();
+        // Bind appropriate array buffer to it
+        gl.bindBuffer(gl.ELEMENT_ARRAY_BUFFER, index_buffer);
+        // Pass the vertex data to the buffer
+        gl.bufferData(gl.ELEMENT_ARRAY_BUFFER, indices, gl.STATIC_DRAW);
+      }
+
+      // 3.2: Create the color buffer
+      {
+        var color_buffer = gl.createBuffer ();
+        gl.bindBuffer(gl.ARRAY_BUFFER, color_buffer);
+        gl.bufferData(gl.ARRAY_BUFFER, colors, gl.STATIC_DRAW);
+      }
+    }
+
+    // 4: Bind the buffer objects to the shaders
+    {
+      // 4.1: Bind the vertex buffer to the vertex attribute
+      {
+        // Bind the vertex buffer object (VBO)
+        gl.bindBuffer(gl.ARRAY_BUFFER, vertex_buffer);
+        // Point an attribute to the currently bound VBO
+        let vertex_attribute = gl.getAttribLocation(shader_program, 'vertex');
+        gl.vertexAttribPointer(vertex_attribute, 2, gl.FLOAT, false, 0, 0);
+        // Enable the attribute
+        gl.enableVertexAttribArray(vertex_attribute);
+      }
+
+      // 4.2: Bind the color buffer to the color attribute
+      {
+        // bind the color buffer
+        gl.bindBuffer(gl.ARRAY_BUFFER, color_buffer);
+        // get the attribute location
+        var color_attribute = gl.getAttribLocation(shader_program, 'color');
+        // point attribute to the volor buffer object
+        gl.vertexAttribPointer(color_attribute, 3, gl.FLOAT, false, 0, 0) ;
+        // enable the color attribute
+        gl.enableVertexAttribArray(color_attribute);
+      }
+
+      // 4.3: Bind the uniform
+      {
+        let translation_uniform = gl.getUniformLocation(shader_program, 'translation');
+        // gl.uniform2f(translation_uniform, translation[0], translation[1]);
+        gl.uniform2fv(translation_uniform, translation);
+      }
+    }
+
+    // 5: Render
+    {
+      // 5.1: Clear
+      {
+        // Set the view port
+        gl.viewport(0, 0, canvas.width, canvas.height);
+        // Clear the canvas
+        gl.clearColor(clear_color[0], clear_color[1], clear_color[2], clear_color[3]);
+        // Clear the color buffer bit
+        gl.clear(gl.COLOR_BUFFER_BIT);
+      }
+
+      // 5.2: Draw
+      {
+        // Draw the triangle
+        gl.drawElements(gl.TRIANGLES, indices.length, gl.UNSIGNED_SHORT, 0);
+      }
+    }
+  </script>
+</body>
+</html>
