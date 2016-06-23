@@ -1,0 +1,91 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>WebGL crumbs</title>
+  <style>
+    html {
+      font-family: sans-serif;
+    }
+    canvas {
+      border: 3px solid;
+    }
+  </style>
+</head>
+<body>
+
+  <h1>Lesson B</h1>
+
+  <canvas id="canvas" width="400" height="300"></canvas>
+
+  <h4>Links</h4>
+
+  <a target="_blank" href="cheatsheet.html">HTML5 Canvas Cheat Sheet</a>
+
+  <script>
+    // 1: Create the rendering context
+    {
+      // 1.1: Initialize the context
+      {
+        // Get a canvas
+        var canvas = document.getElementById('canvas');
+        // Create a 2D rendering context
+        var ctx = canvas.getContext('2d');
+      }
+
+      // 1.2: Initialize the data
+      {
+        // clear color
+        var color = '#00ff00';
+
+        // models
+        var line = [[0.0, 0.0], [0.1, -0.3]]
+      }
+    }
+
+    // 2: Transform
+    {
+      function normalize (coords) {
+        var x = coords[0]
+        var y = coords[1]
+
+        x = x * canvas.width/2 + canvas.width/2
+        y = -y * canvas.height/2 + canvas.height/2
+
+        return [x, y]
+      }
+
+      function transform (coords) {
+        var x = coords[0]
+        var y = coords[1]
+
+        return [x, y]
+      }
+
+    }
+
+    // 2: Render
+    function render () {
+      // 2.1: Clear
+      {
+        // Clear the canvas
+        ctx.clearRect(0, 0, canvas.width, canvas.height);
+      }
+
+      // 2.2: Draw
+      {
+        // Draw a line
+        var p0 = normalize(line[0])
+        var p1 = normalize(line[1])
+
+        ctx.beginPath()
+        ctx.moveTo(p0[0], p0[1])
+        ctx.lineTo(p1[0], p1[1])
+        ctx.stroke()
+        ctx.closePath()
+      }
+    }
+
+    render()
+  </script>
+</body>
+</html>

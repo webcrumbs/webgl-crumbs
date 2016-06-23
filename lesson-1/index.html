@@ -29,8 +29,11 @@
         var vertex_shader_source = `
           attribute vec2 vertex;
 
+          vec2 t = vec2(0.5, -0.4);
+
           void main(void) {
-            gl_Position = vec4(vertex, 0.0, 1.0);
+            t += vertex;
+            gl_Position = vec4(t * 0.25, 0.0, 1.0);
             gl_PointSize = 10.0;
           }
         `;
@@ -38,16 +41,12 @@
         // fragment shader source code
         var fragment_shader_source =  `
           void main(void) {
-            gl_FragColor = vec4(0.0, 0.0, 0.0, 0.1);
+            gl_FragColor = vec4(0.0, 0.0, 0.0, 1.0);
           }
         `;
 
         // vertices
-        var vertices = new Float32Array([
-          -0.5, 0.5,
-          0.0, 0.5,
-          -0.25, 0.25
-        ]);
+        var vertices = [-0.5, 0.5, 0.0, 0.5, -0.25, 0.25];
       }
     }
 
@@ -114,7 +113,7 @@
         //Bind appropriate array buffer to it
         gl.bindBuffer(gl.ARRAY_BUFFER, vertex_buffer);
         // Pass the vertex data to the buffer
-        gl.bufferData(gl.ARRAY_BUFFER, vertices, gl.STATIC_DRAW);
+        gl.bufferData(gl.ARRAY_BUFFER, new Float32Array(vertices), gl.STATIC_DRAW);
         // Unbind the buffer
         gl.bindBuffer(gl.ARRAY_BUFFER, null);
       }
@@ -131,6 +130,8 @@
         gl.vertexAttribPointer(attribute, 2, gl.FLOAT, false, 0, 0);
         // Enable the attribute
         gl.enableVertexAttribArray(attribute);
+
+        gl.bindBuffer(gl.ARRAY_BUFFER, null);
       }
     }
 
@@ -148,8 +149,12 @@
 
       // 5.2: Draw
       {
+        gl.bindBuffer(gl.ARRAY_BUFFER, vertex_buffer);
         // Draw the triangle
-        gl.drawArrays(gl.POINTS, 0, 3);
+        gl.drawArrays(gl.TRIANGLES, 0, 3);
+        // gl.LINE_STRIP
+        // gl.TRIANGLE_FAN
+        // gl.TRIANGLE_STRIP
       }
     }
   </script>

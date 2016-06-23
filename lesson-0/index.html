@@ -6,6 +6,7 @@
 <body>
 
   <h1>Lesson 0</h1>
+
   <canvas id="canvas" width="800" height="600"></canvas>
 
   <script>
@@ -100,10 +101,12 @@
     {
       // 3.1: Clear canvas
       {
-        // Clear the canvas
-        gl.clearColor(clear_color[0], clear_color[1], clear_color[2], clear_color[3]);
-        // Clear the color buffer bit
+        gl.clearColor(1, 0, 0, 0.5);
         gl.clear(gl.COLOR_BUFFER_BIT);
+
+        gl.clearColor(1, 0, 0, 0.2);
+        gl.clear(gl.COLOR_BUFFER_BIT);
+
         // Set the view port
         gl.viewport(0, 0, canvas.width, canvas.height);
       }

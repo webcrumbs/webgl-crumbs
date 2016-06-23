@@ -1,0 +1,72 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>WebGL crumbs</title>
+  <style>
+    html {
+      font-family: sans-serif;
+    }
+    canvas {
+      border: 3px solid;
+    }
+  </style>
+</head>
+<body>
+
+  <h1>Lesson A</h1>
+
+  <canvas id="canvas" width="400" height="300"></canvas>
+
+  <h4>Links</h4>
+
+  <a target="_blank" href="cheatsheet.html">HTML5 Canvas Cheat Sheet</a>
+
+  <script>
+    // 1: Create the rendering context
+    {
+      // 1.1: Initialize the context
+      {
+        // Get a canvas
+        var canvas = document.getElementById('canvas');
+        // Create a 2D rendering context
+        var ctx = canvas.getContext('2d');
+      }
+
+      // 1.2: Initialize the data
+      {
+        // clear color
+        var color = '#00ff00';
+
+        // models
+        var rect = { x: 100, y: 200, w: 50, h: 25 }
+        var line = { x0: 10, y0: 10, x1: 50, y1: 50 }
+      }
+    }
+
+    // 2: Render
+    function render () {
+      // 2.1: Clear
+      {
+        // Clear the canvas
+        ctx.clearRect(0, 0, canvas.width, canvas.height);
+      }
+
+      // 2.2: Draw
+      {
+        // Draw a rect
+        ctx.fillStyle = color;
+        ctx.fillRect(rect.x, rect.y, rect.w, rect.h);
+
+        // Draw a line
+        ctx.beginPath()
+        ctx.moveTo(line.x0, line.y0)
+        ctx.lineTo(line.x1, line.y1)
+        ctx.stroke()
+        ctx.closePath()
+      }
+    }
+
+    render()
+  </script>
+</body>
+</html>

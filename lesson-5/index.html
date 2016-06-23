@@ -6,6 +6,7 @@
 <body>
 
   <h1>Lesson 5</h1>
+
   <canvas id="canvas" width="800" height="600"></canvas>
 
   <script>
@@ -204,13 +205,20 @@
 
       // 4.3: Bind the uniforms
       {
+
+        projection_matrix = get_projection(45, canvas.width/canvas.height, 1, 100)
+
         // bind the projection matrix uniform
         let projection_matrix_uniform = gl.getUniformLocation(shader_program, 'projection_matrix');
         gl.uniformMatrix4fv(projection_matrix_uniform, false, projection_matrix);
 
         // bind the view matrix uniform
+        view_matrix[14] = view_matrix[14] - 3
+        view_matrix[13] = view_matrix[13] - 1
+        view_matrix[12] = view_matrix[12] - 1
+
         let view_matrix_uniform = gl.getUniformLocation(shader_program, 'view_matrix');
-        gl.uniformMatrix4fv(view_matrix_uniform, false, projection_matrix);
+        gl.uniformMatrix4fv(view_matrix_uniform, false, view_matrix);
 
         // bind the model matrix uniform
         let model_matrix_uniform = gl.getUniformLocation(shader_program, 'model_matrix');
@@ -218,8 +226,15 @@
       }
     }
 
+    var t0 = 0
+    var t1
+    var dt
+
     // 5: Render
-    function render () {
+    function render (time) {
+      dt = time - t0;
+      t0 = time
+
       // 5.1: Clear
       {
         // Set the view port
@@ -233,6 +248,12 @@
       // 5.2: Update uniforms
       {
         //...
+        var angle = Math.PI / 2 * 0.001 * dt
+        rotate_z(model_matrix, angle)
+
+        let model_matrix_uniform = gl.getUniformLocation(shader_program, 'model_matrix');
+        gl.uniformMatrix4fv(model_matrix_uniform, false, model_matrix);
+
       }
 
       // 5.2: Draw
@@ -243,25 +264,64 @@
     }
 
     // 6: Animate
-    function animate () {
-      render();
+    function animate (time) {
+      render(time);
       requestAnimationFrame(animate);
     }
 
-    animate()
+    animate(0)
 
     // A: math utilities
-    {
-      function get_projection (fov, aspect, near, far) {
-        var angle = Math.tan((fov * 0.5) * Math.PI/180);
-        var matrix = [
-          0.5/angle, 0 , 0, 0,
-          0, 0.5 * aspect/angle, 0, 0,
-          0, 0, -(far + near) / (far - near), -1,
-          0, 0, (-2 * far * near) / (far - near), 0
-        ];
-        return matrix
-      }
+    function get_projection (fov, aspect, near, far) {
+      var angle = Math.tan((fov * 0.5) * Math.PI/180);
+      var matrix = new Float32Array([
+        0.5/angle, 0 , 0, 0,
+        0, 0.5 * aspect/angle, 0, 0,
+        0, 0, -(far + near) / (far - near), -1,
+        0, 0, (-2 * far * near) / (far - near), 0
+      ]);
+      return matrix
+    }
+
+    function rotate_z (m, angle) {
+      var c = Math.cos(angle);
+      var s = Math.sin(angle);
+      var mv0 = m[0], mv4 = m[4], mv8 = m[8];
+
+      m[0] = c*m[0]-s*m[1];
+      m[4] = c*m[4]-s*m[5];
+      m[8] = c*m[8]-s*m[9];
+      m[1] = c*m[1]+s*mv0;
+      m[5] = c*m[5]+s*mv4;
+      m[9] = c*m[9]+s*mv8;
+    }
+
+    function rotate_x(m, angle) {
+      var c = Math.cos(angle);
+      var s = Math.sin(angle);
+      var mv1 = m[1], mv5 = m[5], mv9 = m[9];
+
+      m[1] = m[1]*c-m[2]*s;
+      m[5] = m[5]*c-m[6]*s;
+      m[9] = m[9]*c-m[10]*s;
+
+      m[2] = m[2]*c+mv1*s;
+      m[6] = m[6]*c+mv5*s;
+      m[10] = m[10]*c+mv9*s;
+    }
+
+    function rotate_y(m, angle) {
+      var c = Math.cos(angle);
+      var s = Math.sin(angle);
+      var mv0 = m[0], mv4 = m[4], mv8 = m[8];
+
+      m[0] = c*m[0]+s*m[2];
+      m[4] = c*m[4]+s*m[6];
+      m[8] = c*m[8]+s*m[10];
+
+      m[2] = c*m[2]-s*mv0;
+      m[6] = c*m[6]-s*mv4;
+      m[10] = c*m[10]-s*mv8;
     }
   </script>
 </body>

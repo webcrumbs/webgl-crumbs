@@ -50,9 +50,7 @@
         ]);
 
         // Create the indices
-        var indices = new Uint16Array([
-          0, 1, 2
-        ]);
+        var indices = [0, 1, 2];
       }
     }
 
@@ -132,6 +130,9 @@
         gl.bindBuffer(gl.ELEMENT_ARRAY_BUFFER, index_buffer);
         // Pass the vertex data to the buffer
         gl.bufferData(gl.ELEMENT_ARRAY_BUFFER, new Uint16Array(indices), gl.STATIC_DRAW);
+        // Unbind the buffer
+        gl.bindBuffer(gl.ELEMENT_ARRAY_BUFFER, null);
+
       }
     }
 
@@ -143,9 +144,7 @@
         gl.bindBuffer(gl.ARRAY_BUFFER, vertex_buffer);
         // Point an attribute to the currently bound VBO
         let attribute_location = gl.getAttribLocation(shader_program, "vertex");
-        let attribute_size = 2;
-        let attribute_type = gl.FLOAT;
-        gl.vertexAttribPointer(attribute_location, attribute_size, attribute_type, false, 0, 0);
+        gl.vertexAttribPointer(attribute_location, 2, gl.FLOAT, false, 0, 0);
         // Enable the attribute
         gl.enableVertexAttribArray(attribute_location);
       }
@@ -165,7 +164,10 @@
 
       // 5.2: Draw
       {
-        // Draw the triangle
+        gl.bindBuffer(gl.ARRAY_BUFFER, vertex_buffer);
+
+        gl.bindBuffer(gl.ELEMENT_ARRAY_BUFFER, index_buffer);
+
         gl.drawElements(gl.TRIANGLES, indices.length, gl.UNSIGNED_SHORT, 0);
       }
     }
