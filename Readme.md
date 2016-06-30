@@ -8,12 +8,11 @@
 3. [lesson 3](lesson-3/index.html)
 4. [lesson 4](lesson-4/index.html)
 5. [lesson 5](lesson-5/index.html)
-6. [lesson 5](lesson-6/index.html)
-7. [lesson 5](lesson-7/index.html)
+6. [lesson 6](lesson-6/index.html)
+7. [lesson 7](lesson-7/index.html)
 
-A. [lesson A](lesson-A/index.html)
-
-B. [lesson B](lesson-B/index.html)
+1. [lesson A](lesson-A/index.html)
+2. [lesson B](lesson-B/index.html)
 
 ## License
 
