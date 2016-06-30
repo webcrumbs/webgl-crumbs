@@ -10,7 +10,9 @@
 5. [lesson 5](lesson-5/index.html)
 6. [lesson 5](lesson-6/index.html)
 7. [lesson 5](lesson-7/index.html)
+
 A. [lesson A](lesson-A/index.html)
+
 B. [lesson B](lesson-B/index.html)
 
 ## License
