@@ -15,7 +15,7 @@
 
   <h1>Lesson B</h1>
 
-  <canvas id="canvas" width="400" height="300"></canvas>
+  <canvas id="canvas" width="600" height="300"></canvas>
 
   <h4>Links</h4>
 
@@ -48,8 +48,8 @@
         var x = coords[0]
         var y = coords[1]
 
-        x = x * canvas.width/2 + canvas.width/2
-        y = -y * canvas.height/2 + canvas.height/2
+        x = (x + 1) / 2 * canvas.width
+        y = (-y + 1) / 2 * canvas.height
 
         return [x, y]
       }

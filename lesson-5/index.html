@@ -249,7 +249,7 @@
       {
         //...
         var angle = Math.PI / 2 * 0.001 * dt
-        rotate_z(model_matrix, angle)
+        rotate_x(model_matrix, angle)
 
         let model_matrix_uniform = gl.getUniformLocation(shader_program, 'model_matrix');
         gl.uniformMatrix4fv(model_matrix_uniform, false, model_matrix);
@@ -313,16 +313,21 @@
     function rotate_y(m, angle) {
       var c = Math.cos(angle);
       var s = Math.sin(angle);
-      var mv0 = m[0], mv4 = m[4], mv8 = m[8];
+      var mv0 = m[0];
+      var mv4 = m[4];
+      var mv8 = m[8];
 
-      m[0] = c*m[0]+s*m[2];
-      m[4] = c*m[4]+s*m[6];
-      m[8] = c*m[8]+s*m[10];
+      m[0] = c * m[0] + s * m[2];
+      m[4] = c * m[4] + s * m[6];
+      m[8] = c * m[8] + s * m[10];
 
-      m[2] = c*m[2]-s*mv0;
-      m[6] = c*m[6]-s*mv4;
-      m[10] = c*m[10]-s*mv8;
+      m[2] = c * m[2] - s * mv0;
+      m[6] = c * m[6] - s * mv4;
+      m[10] = c * m[10] - s * mv8;
     }
+
+    // CREDITS
+    // http://www.tutorialspoint.com/webgl
   </script>
 </body>
 </html>

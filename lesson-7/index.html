@@ -5,7 +5,7 @@
 </head>
 <body>
 
-  <h1>Lesson 4</h1>
+  <h1>Lesson 7</h1>
   <canvas id="canvas" width="800" height="600"></canvas>
 
   <script>
@@ -31,12 +31,13 @@
           attribute vec3 color;
 
           varying vec3 _color;
-
-          uniform vec2 translation;
+          varying vec2 _position;
 
           void main(void) {
-            gl_Position = vec4(translation + vertex, 0.0, 1.0);
+            gl_Position = vec4(vertex, 0.0, 1.0);
+            gl_PointSize = 10.0;
             _color = color;
+            _position = vertex;
           }
         `;
 
@@ -45,26 +46,24 @@
           precision mediump float;
 
           varying vec3 _color;
+          varying vec2 _position;
 
           void main(void) {
-            gl_FragColor = vec4(_color, 1.0);
+            float d = distance(gl_FragCoord.xy, vec2(400.0, 200.0));
+            if (d < 100.0) {
+              gl_FragColor = vec4(1.0, 1.0, 1.0, 1.0);
+            } else {
+              gl_FragColor = vec4(_color, 1.0);
+            }
           }
         `;
 
-        // clear color
-        var clear_color = [0.5, 0.5, 0.5, 1];
-
-        // vertices 2D
-        var vertices = new Float32Array([-0.5, 0.5, 0.0, 0.5, -0.25, 0.25]);
-
-        // indices
-        var indices = new Uint16Array([0, 1, 2]);
-
-        // the colors RGB
-        var colors = new Float32Array([1, 0, 0, 0, 1, 0, 0, 0, 1]);
-
-        // translation
-        var translation = [0.5, 0.5];
+        // vertices
+        var vertices = [
+          -1.0, -1.0, 1.0, 0.0, 0.0,
+           1.0, -1.0, 0.0, 1.0, 0.0,
+           0.0, 1.0, 0.0, 0.0, 1.0
+        ];
       }
     }
 
@@ -131,26 +130,9 @@
         //Bind appropriate array buffer to it
         gl.bindBuffer(gl.ARRAY_BUFFER, vertex_buffer);
         // Pass the vertex data to the buffer
-        gl.bufferData(gl.ARRAY_BUFFER, vertices, gl.STATIC_DRAW);
+        gl.bufferData(gl.ARRAY_BUFFER, new Float32Array(vertices), gl.STATIC_DRAW);
         // Unbind the buffer
         gl.bindBuffer(gl.ARRAY_BUFFER, null);
-      }
-
-      // 3.2: Create the index buffer
-      {
-        // Create an empty buffer object to store Index buffer
-        var index_buffer = gl.createBuffer();
-        // Bind appropriate array buffer to it
-        gl.bindBuffer(gl.ELEMENT_ARRAY_BUFFER, index_buffer);
-        // Pass the vertex data to the buffer
-        gl.bufferData(gl.ELEMENT_ARRAY_BUFFER, indices, gl.STATIC_DRAW);
-      }
-
-      // 3.2: Create the color buffer
-      {
-        var color_buffer = gl.createBuffer ();
-        gl.bindBuffer(gl.ARRAY_BUFFER, color_buffer);
-        gl.bufferData(gl.ARRAY_BUFFER, colors, gl.STATIC_DRAW);
       }
     }
 
@@ -161,50 +143,60 @@
         // Bind the vertex buffer object (VBO)
         gl.bindBuffer(gl.ARRAY_BUFFER, vertex_buffer);
         // Point an attribute to the currently bound VBO
-        let vertex_attribute = gl.getAttribLocation(shader_program, 'vertex');
-        gl.vertexAttribPointer(vertex_attribute, 2, gl.FLOAT, false, 0, 0);
+        let attribute = gl.getAttribLocation(shader_program, 'vertex');
+
+        // define the offset in bytes between the beginning of consecutive vertex attributes
+        // 5 values (x, y, r, g, b) * 4 bytes per value (float) = 20 bytes
+        let stride = 5 * Float32Array.BYTES_PER_ELEMENT
+        // define the offset in bytes of the first component in the vertex attribute array
+        // (x, y) starts from 0
+        let offset = 0 * Float32Array.BYTES_PER_ELEMENT
+        gl.vertexAttribPointer(attribute, 2, gl.FLOAT, false, stride, offset);
         // Enable the attribute
-        gl.enableVertexAttribArray(vertex_attribute);
+        gl.enableVertexAttribArray(attribute);
+
+        gl.bindBuffer(gl.ARRAY_BUFFER, null);
       }
 
-      // 4.2: Bind the color buffer to the color attribute
+      // 4.1: Bind the vertex buffer to the vertex attribute
       {
-        // bind the color buffer
-        gl.bindBuffer(gl.ARRAY_BUFFER, color_buffer);
-        // get the attribute location
-        var color_attribute = gl.getAttribLocation(shader_program, 'color');
-        // point attribute to the volor buffer object
-        gl.vertexAttribPointer(color_attribute, 3, gl.FLOAT, false, 0, 0) ;
-        // enable the color attribute
-        gl.enableVertexAttribArray(color_attribute);
+        // Bind the vertex buffer object (VBO)
+        gl.bindBuffer(gl.ARRAY_BUFFER, vertex_buffer);
+        // Point an attribute to the currently bound VBO
+        let attribute = gl.getAttribLocation(shader_program, 'color');
+        // define the offset in bytes between the beginning of consecutive vertex attributes
+        // 5 values (x, y, r, g, b) * 4 bytes per value (float) = 20 bytes
+        let stride = 5 * Float32Array.BYTES_PER_ELEMENT
+        // define the offset in bytes of the first component in the vertex attribute array
+        // (r, g, b) starts after (x, y)
+        // 2 values (x, y) * 4 bytes per value (float) = 8
+        let offset = 2 * Float32Array.BYTES_PER_ELEMENT
+        gl.vertexAttribPointer(attribute, 3, gl.FLOAT, false, stride, offset);
+        // Enable the attribute
+        gl.enableVertexAttribArray(attribute);
+
+        gl.bindBuffer(gl.ARRAY_BUFFER, null);
       }
 
-      // 4.3: Bind the uniform
-      {
-        let translation_uniform = gl.getUniformLocation(shader_program, 'translation');
-
-        // gl.uniform2f(translation_uniform, translation[0], translation[1]);
-
-        gl.uniform2fv(translation_uniform, translation);
-      }
     }
 
-    // 5: Render
+    // 5: Draw
     {
       // 5.1: Clear
       {
-        // Set the view port
-        gl.viewport(0, 0, canvas.width, canvas.height);
         // Clear the canvas
-        gl.clearColor(clear_color[0], clear_color[1], clear_color[2], clear_color[3]);
+        gl.clearColor(0.5, 0.5, 0.5, 1);
         // Clear the color buffer bit
         gl.clear(gl.COLOR_BUFFER_BIT);
+        // Set the view port
+        gl.viewport(0, 0, canvas.width, canvas.height);
       }
 
       // 5.2: Draw
       {
+        gl.bindBuffer(gl.ARRAY_BUFFER, vertex_buffer);
         // Draw the triangle
-        gl.drawElements(gl.TRIANGLES, indices.length, gl.UNSIGNED_SHORT, 0);
+        gl.drawArrays(gl.TRIANGLES, 0, 3);
       }
     }
   </script>
